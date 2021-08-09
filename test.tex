@@ -1,0 +1,79 @@
+\documentclass[uplatex,dvipdfmx,tate,book,twoside,openright,onecolumn,hanging_punctuation,
+% •paper=[< 紙サイズ名 >/{< 寸法 >,< 寸法 >}] ：紙サイズです．紙サイズ名は a0 から a10 ， b0 か
+%  ら b10 ， c2 から c8 を指定できます． B 列は JIS B 列です．また， {< 横 >,< 縦 >} と直接寸法を
+%  指定することもできます．
+paper=b6,
+% •fontsize=< 寸法 ;Q,H> ：欧文フォントサイズ．デフォルトは 10pt ．
+% •jafontsize=< 寸法 ;Q,H> ：和文フォントサイズ．
+% •jafontscale=< 実数値 > ：欧文フォントと和文フォントの比（和文 / 欧文）． fontsize と
+%  jafontsize が両方指定されている場合は無視される．デフォルトは 1 ．
+% jafontscale=0.924690,
+% •line_length=< 寸法 ;zw,zh> ：一行の長さ．デフォルトは字送り方向の紙幅の 0.75 倍．実際
+%  の値は一文字の長さの整数倍になるように補正されます．
+line_length=40zh,
+% •number_of_lines=< 自然数値 > ：一ページの行数．デフォルトは行送り方向の紙幅の 0.75 倍
+%  になるような値．
+number_of_lines=15,
+% •gutter=< 寸法 ;zw,zh> ：のどの余白の大きさ．
+%  – tate 無指定時は奇数ページ左，偶数ページ右の余白
+%  – tate 指定時は奇数ページ右，偶数ページ左の余白
+%  – twoside が指定されていない時は，常に奇数ページ扱いで余白が設定される
+% gutter=4zw,
+% •fore-edge=< 寸法 ;zw,zh> ：小口（のどでない方）の余白の大きさ．「日本語組版処理の要件」
+%  にある方法で余白を指定する限り使われることはありませんが，便利なこともあるので実装さ
+%  れています．
+% •head_space=< 寸法 ;zw,zh> ：天の空き量．デフォルトは中央寄せになるような値．
+% head_space=15zw
+% •foot_space=< 寸法 ;zw,zh> ：地の空き量．デフォルトは中央寄せになるような値．
+% •baselineskip=< 寸法 ;Q,H,zw,zh> ：行送り．デフォルトは jafontsize の 1.7 倍．
+% •linegap=< 寸法 ;Q,H,zw,zh> ：行間．
+linegap=0.75zw, 
+% •headfoot_sidemargin=< 寸法 ;zw,zh> ：柱やノンブルの左右の空き．
+headfoot_sidemargin=12zw,
+% •column_gap=< 寸法 ;zw,zh> ：段間（ twocolumn 指定時のみ）．
+column_gap=0zh,
+% •sidenote_length=< 寸法 ;zw,zh> ：傍注の幅を指定します．
+% sidenote_length=8zw, % 頭注的高度
+open_bracket_pos=nibu_tentsuki,%open_bracket_pos=zenkakunibu_nibu
+]{jlreq}
+
+%\usepackage[deluxe,multi,scale=0.924690]{otf}% 多書体設定
+\usepackage{fontsettings}
+\usepackage{pjlreq}
+
+\title{书籍标题}
+\author{朝代\quad 作者}
+\date{}
+
+\begin{document}
+\maketitle
+\setlength{\parindent}{2.2zh}
+\pagestyle{plain}
+\chapter*{前言}
+\addcontentsline{toc}{chapter}{前言}
+\fontsize{12pt}{17}\selectfont
+\zhlipsum[1-5][name=trad]
+\fontsize{12pt}{15}\selectfont
+\pagestyle{plain}
+\tableofcontents
+\newpage
+\pagestyle{plain}
+\setlength{\parindent}{2.5zh}
+\chapter{字符空间测试}
+%%%%%%%%%%%%测试代码开始
+\AddEverypageHook{%此后每页都添加网格
+  \BgMaterial
+}
+%%%%%%%%%%%%测试代码结束
+\Large
+\input{chinese.tex}
+\pagestyle{plain}
+\chapter{章节目录一}
+\Large
+%\fontsize{14pt}{21}\selectfont
+則名學才據引親
+%\zhlipsum[1-5][name=trad] 
+\chapter{章节目录二}
+\Large
+\zhlipsum[1-5][name=simp] 
+\end{document}

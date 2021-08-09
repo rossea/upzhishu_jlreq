@@ -1,0 +1,264 @@
+\ProvidesPackage{pjlreq}[2021/06/27 v1.0a rossea]
+%修改自私家版日本語 LaTeX テンプレート（2017年5月版）
+%https://id.fnshr.info/2017/05/20/my-latex-templates-201705/
+
+\oddsidemargin 0mm %奇数页边校正
+\evensidemargin 0mm
+\hoffset -9.2mm
+\voffset 0mm
+%\textwidth 152mm %縦書なので、これがテキストの「高さ」
+%\textheight 77.9mm %縦書なので、これがテキストの「幅」（行の幅×行数＋行間×行間数）
+\textheight 27.2zw %縦書なので、これがテキストの「幅」（行の幅×行数＋行間×行間数）1*11+0.5*(11-1)
+
+\usepackage{plext} 
+
+%% フォント関連
+% \usepackage[T1]{fontenc} % フォントでT1を使うこと
+% \usepackage{textcomp} % フォントでTS1を使うこと
+% \usepackage[utf8]{inputenc} % ファイルがUTF8であること
+% \usepackage[deluxe,multi,scale=0.924690,jis2004]{otf}% 多書体設定
+% \usepackage[prefernoncjk]{pxcjkcat} % なるべく「半角」扱いで。
+
+%% 図表など
+% 図の読みこみのために
+\usepackage[dvipdfmx, hiresbb]{graphicx, xcolor}
+\usepackage{booktabs} % 表の横罫線
+
+%% 囲み枠
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable} % ページをまたいで分割できるように
+
+%% misc
+\usepackage{okumacro} % 圏点などのために
+\usepackage{pxrubrica} % ルビをつける（okumacroのrubyは使わない）
+\usepackage{sfkanbun} % 漢文
+% sfkanbun パッケージは、
+% http://xymtex.my.coocan.jp/fujitas2/texlatex/index.html 
+% から入手可能
+
+%% 見出しのスタイルの設定
+% chapterの定義
+\DeclareTobiraHeading{chapter}{1}{% chapter を扉見出しに
+  format={\null\vfil {\Huge\mcfamily {\LARGE #1}#2}}, % 見出しのフォント
+  label_format={第\thechapter 章\hspace{2zw}} % ラベルのフォーマット
+}
+\DeclareBlockHeading{chapter}{1}{ % chapter を別行見出しに
+  pagebreak=cleardoublepage, % 章を始める前に改丁
+  label_format={第\thechapter 章}, % ラベルのフォーマット
+  font={\mcfamily\LARGE}, % 見出しのフォント
+  lines=3,before_lines=1,after_lines=0, % 見出しのために5行取り、後ろの方が2行分広い
+  indent=2zw % インデント
+}
+
+% 垂直页眉
+\RenewPageStyle{plain}{
+    tate,%垂直页眉
+    odd_running_head = {_chapter},%奇数页页眉
+    even_running_head = {书籍标题},%偶数页页眉
+    nombre = {\kansuji\value{page}}%中文页码
+  }
+\pagestyle{plain}
+
+% section の定義
+\renewcommand{\thesection}{} % 節の番号はなしが基本
+\DeclareBlockHeading{section}{2}{ % section を別行見出しに
+  label_format={第\thechapter 节}, % ラベルのフォーマット
+  font={\mcfamily}, % 見出しのフォント
+  lines=1, before_lines=1,% 見出しの前に1行取る
+  indent=2zw % インデント
+}
+
+%% 目次の設定
+\setcounter{tocdepth}{1} % sectionまでを目次に
+
+%% hyperrefの設定
+\usepackage[dvipdfmx,%
+    pdftitle=タイトル, % PDFのタイトル
+    pdfauthor=作成者, % PDFの作成者
+    bookmarks=true, % PDFにしおりをつける
+    bookmarksnumbered=true, % しおりに節番号などをつける
+    colorlinks=false, % リンクには色をつけない
+    hyperfootnotes=false, % 脚注からのリンクを作らない
+    pdfborder={0 0 0}, % 枠なし
+    pdfdirection=R2L, % 開く方向
+    pdfpagelayout=TwoPageRight, % 奇数頁が右側になるような見開きモードで開く
+    pdfpagemode=UseNone]{hyperref}
+
+% PDFにしたときのしおりの文字化けを防ぐ
+\usepackage{pxjahyper}
+
+% hyperref を使っているときに
+% 目次でのページ番号の向きを適切にする
+\makeatletter
+%\def\contentsline#1#2#3#4{\csname l@#1\endcsname{\hyper@linkstart{link}{#4}{#2}\hyper@linkend}{\kansuji{#3}}}
+\def\contentsline#1#2#3#4{\csname l@#1\endcsname{\hyper@linkstart{link}{#4}{#2}\hyper@linkend}{\kansuji#3}}
+\makeatother
+
+%%解除jlreq.cls的\parindent>0pt判断限制
+\makeatletter
+\setlength{\parindent}{1\zw}
+\def\jlreq@setfontsizehook{}
+\apptocmd{\set@fontsize}{\expandafter\def\expandafter\size@update\expandafter{\size@update\jlreq@setfontsizehook}}{}{}
+%%%\appto\jlreq@setfontsizehook{ \dim_compare:nT { \parindent>0pt } { \setlength{\parindent}{1\jlreq@zw} } }
+\ifx l\jlreq@engine
+  \@tempskipa=\ltjgetparameter{kanjiskip}
+  \ifdim\@tempskipa=\maxdimen\else
+    \appto\jlreq@setfontsizehook{%
+      \ltj@setpar@global
+      \ltjsetkanjiskip\jlreqkanjiskip
+      \@tempskipa=\ltjgetparameter{xkanjiskip}%
+      \ifdim\@tempskipa>0pt
+        \ltjsetxkanjiskip\jlreqxkanjiskip
+      \fi
+    }
+  \fi
+\else
+  \appto\jlreq@setfontsizehook{%
+    \kanjiskip=\jlreqkanjiskip
+    \ifdim\xkanjiskip>0pt
+      \xkanjiskip=\jlreqxkanjiskip
+    \fi
+  }
+\fi
+\makeatother
+
+%%%以下为割注设置，设置割注字体，删除jlreq的割注括号
+\makeatletter
+\setlength{\parindent}{4pt}
+\renewcommand{\inlinenotesize}{8pt} %%割注の文字大小
+\renewcommand{\jlreq@inlinenote@endnote}{%%删除jlreq割注后の括弧
+  \jlreq@in@inlinenotefalse%
+  {%
+    \setbox\jlreq@tempboxa=\hbox{\jlreq@inlinenote@kakkofontsize{}}%
+    \jlreq@box@putcenter\jlreq@tempboxa %
+    \inhibitglue%
+  }%
+}
+\renewcommand*{\jlreq@inlinenote@auto}[1]{%%删除jlreq割注前の括弧
+  % 割注初め括弧の前の場所を保存
+  \jlreq@savepos@for@rest@linewidth
+  % \jlreq@tempdimbに，現在行の残り長さを入れる
+  \jlreq@tempdimb=\jlreq@rest@linewidth
+  % 括弧の分を引いたものが，割注の使える長さ
+  \setbox\@tempboxa=\hbox{\jlreq@inlinenote@kakkofontsize\inhibitglue\jlreq@open@bracket@before@space{}\inhibitglue}%
+  \addtolength{\jlreq@tempdimb}{-\wd\@tempboxa}%
+  \ifdim\jlreq@tempdimb<0pt\jlreq@tempdimb=\linewidth\fi
+  {%
+    \setbox\jlreq@tempboxa=\hbox{\jlreq@inlinenote@kakkofontsize\inhibitglue \jlreq@open@bracket@before@space{}}%
+    \jlreq@box@putcenter\jlreq@tempboxa
+  }%
+  % 「初回」時はここに強制改行を入れる．これにより現在位置の取得がより正しくなる……といいなぁ
+  \jlreq@savepos@iflabelundefined{\\}{}%
+  % 割注内の\baselineskipを保存（後で使う）．
+  {\jlreq@inlinenote@fontsize\xdef\jlreq@inlinenote@baselineskip{\the\baselineskip}}%
+  % 普通に並べた長さを計測し，その半分から始める
+  \setbox\@tempboxa=\hbox{\jlreq@inlinenote@fontsize #1}%
+  \jlreq@tempdimc=\wd\@tempboxa
+  \divide\jlreq@tempdimc by 2\relax
+  % \@tempcntbに，この長さで計測した場合の行数を入れる
+  \ifdim\jlreq@tempdimc<\jlreq@tempdimb\@tempcntb=2\relax
+  \else
+    \jlreq@tempdima=\dimexpr\jlreq@tempdimc - \jlreq@tempdimb\relax
+    \divide\jlreq@tempdima\linewidth
+    \@tempcntb=\numexpr 2*\number\jlreq@tempdima + 4\relax
+  \fi
+  % \jlreq@parshapeargに\parshapeに指定する書式の最後以外を入れる．
+  \ifnum\@tempcntb>2\relax
+    \edef\jlreq@parshapearg{0pt \the\jlreq@tempdimb\space 0pt \the\jlreq@tempdimb}%
+    \@tempcnta=4\relax
+    \@whilenum\@tempcnta<\@tempcntb\do{%
+      \edef\jlreq@parshapearg{\jlreq@parshapearg\space 0pt \the\linewidth\space 0pt \the\linewidth}%
+      \advance\@tempcnta by 2\relax
+    }%
+    \setlength{\jlreq@tempdimc}{\dimexpr\jlreq@tempdimc - \jlreq@tempdimb - \linewidth * \numexpr(\@tempcntb - 4)/2\relax\relax}%
+  \else
+    \def\jlreq@parshapearg{}%
+  \fi
+  % 行数を伸ばしつつ良いところを探していく
+  \@whilenum\@tempcntb<1001\do{%
+    \ifnum\@tempcntb>2\jlreq@tempdimb=\linewidth\fi
+    \edef\@tempb{\the\@tempcntb}%
+    \jlreq@inlinenote@determinelength{#1}{\jlreq@inlinenote@fontsize}{\jlreq@parshapearg}{2}{\@tempb}{\jlreq@tempdimc}{\jlreq@tempdimb}%
+    \@tempcntb=\@tempb
+    \ifnum\@tempcntb>999\relax% ループが長すぎる
+      \global\setbox\jlreq@resultbox=\voidb@x%
+      \@tempcntb=1001\relax
+    \fi
+    \ifvoid\jlreq@resultbox\else% 成功
+      \edef\jlreq@inlinenote@lines{\the\@tempcntb}% 行数を保存
+      \@tempcntb=1001\relax
+    \fi
+    \advance\@tempcntb by 2\relax
+    \edef\jlreq@parshapearg{\jlreq@parshapearg 0pt \the\jlreq@tempdimb 0pt \the\jlreq@tempdimb}%
+  }%
+  \ifvoid\jlreq@resultbox
+    \ClassWarning{jlreq}{\string\gezhu\space failed, may be a bug}%
+  \else
+    \@tempcnta=0
+    \splittopskip=0pt\relax
+    \splitmaxdepth=\maxdimen
+    % 現在行の残り長さを思い出す
+    \jlreq@tempdimb=\jlreq@rest@linewidth
+    \setbox\@tempboxa=\hbox{\jlreq@inlinenote@kakkofontsize\inhibitglue\jlreq@open@bracket@before@space{}\inhibitglue}%
+    \addtolength{\jlreq@tempdimb}{-\wd\@tempboxa}%
+    \setbox\@tempboxa=\box\jlreq@resultbox
+    \@whilenum\@tempcnta<\jlreq@inlinenote@lines\do{%
+      \ifnum\@tempcnta>0 \jlreq@inlinenote@autolinebreak\fi
+      % \jlreq@tempdimaに今の行の長さを入れる
+      \ifnum\@tempcnta<\numexpr\jlreq@inlinenote@lines - 2\relax
+        \ifnum\@tempcnta=0\jlreq@tempdima=\jlreq@tempdimb
+        \else\jlreq@tempdima=\linewidth\fi
+      \else
+        % 最終行は自然長に任せる
+        \jlreq@tempdima=-1pt\relax
+      \fi
+      {%
+        \edef\@tempa{\the\vbadness}%
+        \vbadness=10000
+        \setbox\jlreq@tempboxa=\vsplit\@tempboxa to \dimexpr\jlreq@inlinenote@baselineskip*2\relax
+        \vbadness=\@tempa\relax
+        \jlreq@getlastbox{\jlreq@tempboxa}%
+        \setbox\jlreq@tempboxb=\box\jlreq@resultbox
+        \jlreq@getlastbox{\jlreq@tempboxa}%
+        \setbox\jlreq@tempboxa=\box\jlreq@resultbox
+        \ifdim\jlreq@tempdima>0pt\relax
+          \setbox\jlreq@tempboxa=\vbox{\jlreq@inlinenote@fontsize
+            \hbox to \jlreq@tempdima{\unhbox\jlreq@tempboxa}%
+            \hbox to \jlreq@tempdima{\unhbox\jlreq@tempboxb}}%
+        \else
+          \setbox\jlreq@tempboxa=\vbox{\jlreq@inlinenote@fontsize
+            \hbox{\unhbox\jlreq@tempboxa}%
+            \hbox{\unhbox\jlreq@tempboxb}}%
+        \fi
+        \jlreq@box@putcenter\jlreq@tempboxa
+      }%
+      \advance\@tempcnta by 2\relax
+    }%
+  \fi
+  \jlreq@inlinenote@endnote
+}
+
+\renewcommand*{\jlreq@inlinenote@noauto}[1]{%%删除jlreq割注noauto模式前の括弧
+  \setbox\jlreq@tempboxa=\hbox{\jlreq@inlinenote@kakkofontsize\inhibitglue\jlreq@open@bracket@before@space{}}%
+  \inhibitglue\jlreq@box@putcenter\jlreq@tempboxa
+  \jlreq@inlinenote@noauto@#1\\\jlreq@endmark\jlreq@endmark
+  \jlreq@inlinenote@endnote
+}
+\makeatother
+%%%以上为割注设置，设置割注字体，删除jlreq的割注括号
+
+%%%%%%%%%%%%测试代码开始
+%\usepackage{showframe}
+\usepackage{tikz}
+\usepackage[pages=some, scale=1,angle=0]{background}
+\usepackage{zhlipsum}
+\backgroundsetup{
+  contents={%
+  \begin{tikzpicture}%[color={blue}, remember picture, overlay,opacity=1]
+  \draw[step=0.76,blue,thin,xshift=0cm,yshift=0cm](-6,-7.5)grid(5.5, 7.5); 
+  \end{tikzpicture}
+  }
+}
+%%%%%%%%%%%%测试代码结束
+
+\endinput
